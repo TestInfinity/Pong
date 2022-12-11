@@ -1,6 +1,8 @@
 import random
 import time
 import turtle
+from turtle import Turtle
+import copy
 
 wn = turtle.Screen()
 wn.title("Pong")
@@ -12,33 +14,40 @@ wn.tracer(0)
 player_score = 0
 opponent_score = 0
 
+
+class Paddle(Turtle):
+
+    def __init__(self, x):
+        super().__init__()
+        self.speed(0)
+        self.shape("square")
+        self.color("white")
+        self.shapesize(5, 1)
+        self.penup()
+        self.goto(x, 0)
+
+
+class Ball(Turtle):
+
+    def __init__(self):
+        super().__init__()
+        self.speed(0)
+        self.shape("circle")
+        self.color("white")
+        self.penup()
+        self.goto(0, 0)
+        self.dx = 2
+        self.dy = 2
+
+
 # Player
-player_paddle = turtle.Turtle()
-player_paddle.speed(0)
-player_paddle.shape("square")
-player_paddle.color("white")
-player_paddle.shapesize(stretch_wid=5, stretch_len=1)
-player_paddle.penup()
-player_paddle.goto(-350, 0)
+player_paddle = Paddle(-350)
 
 # Opponent
-opponent_paddle = turtle.Turtle()
-opponent_paddle.speed(0)
-opponent_paddle.shape("square")
-opponent_paddle.color("white")
-opponent_paddle.shapesize(stretch_wid=5, stretch_len=1)
-opponent_paddle.penup()
-opponent_paddle.goto(350, 0)
+opponent_paddle = Paddle(350)
 
 # Ball
-ball = turtle.Turtle()
-ball.speed(0)
-ball.shape("circle")
-ball.color("white")
-ball.penup()
-ball.goto(0, 0)
-ball.dx = 2
-ball.dy = 2
+ball = Ball()
 
 # Pen
 scoreboard = turtle.Turtle()
@@ -55,24 +64,26 @@ scoreboard.write("Player: 0  Opponent: 0", align="center", font=("Courier", 24, 
 def paddle_up(paddle):
     y = paddle.ycor()
     if y < 290:
-        y += 20
+        y += 10
         paddle.sety(y)
 
 
 def paddle_down(paddle):
     y = paddle.ycor()
     if y > -290:
-        y -= 20
+        y -= 10
         paddle.sety(y)
 
 
 def opponent_decession():
-
     if ball.dx > 0:
-        if ball.ycor() > opponent_paddle.ycor():
-            paddle_up(opponent_paddle)
-        elif ball.ycor() < opponent_paddle.ycor():
-            paddle_down(opponent_paddle)
+
+        if abs(player_paddle.ycor() - ball.ycor()) > 30:
+            if ball.ycor() > opponent_paddle.ycor():
+                paddle_up(opponent_paddle)
+            elif ball.ycor() < opponent_paddle.ycor():
+                paddle_down(opponent_paddle)
+
 
 
 # Keyboard bindings
@@ -83,6 +94,7 @@ wn.onkeypress(lambda: paddle_down(player_paddle), "Down")
 # Main game loop
 try:
     while True:
+
         wn.update()
         time.sleep(0.009)
 
@@ -106,7 +118,7 @@ try:
             player_score += 1
             scoreboard.clear()
             scoreboard.write(f"Player: {player_score}  Opponent: {opponent_score}", align="center",
-                             font=("Courier", 24, "normal"))
+                             font=("Courier", 24))
             ball.goto(0, 0)
             ball.dx *= -1
 
@@ -114,7 +126,7 @@ try:
             opponent_score += 1
             scoreboard.clear()
             scoreboard.write(f"Player: {player_score}  Opponent: {opponent_score}", align="center",
-                             font=("Courier", 24, "normal"))
+                             font=("Courier", 24))
             ball.goto(0, 0)
             ball.dx *= -1
 
@@ -130,8 +142,8 @@ try:
         elif ball.dx < -2:
             ball.dx = -2
 
-        if random.random() < 0.25:
+        if random.random() < 0.35:
             opponent_decession()
 
-except:
+except SyntaxError:
     pass
