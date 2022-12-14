@@ -2,7 +2,6 @@ import random
 import time
 import turtle
 from turtle import Turtle
-import copy
 
 wn = turtle.Screen()
 wn.title("Pong")
@@ -13,6 +12,8 @@ wn.tracer(0)
 # Score
 player_score = 0
 opponent_score = 0
+
+colors = ["blue", "turquoise", "red", "yellow", "orange", "beige"]
 
 
 class Paddle(Turtle):
@@ -33,7 +34,7 @@ class Ball(Turtle):
         super().__init__()
         self.speed(0)
         self.shape("circle")
-        self.color("white")
+        self.color(random.choice(colors))
         self.penup()
         self.goto(0, 0)
         self.dx = 2
@@ -85,7 +86,6 @@ def opponent_decession():
                 paddle_down(opponent_paddle)
 
 
-
 # Keyboard bindings
 wn.listen()
 wn.onkeypress(lambda: paddle_up(player_paddle), "Up")
@@ -94,6 +94,15 @@ wn.onkeypress(lambda: paddle_down(player_paddle), "Down")
 # Main game loop
 try:
     while True:
+
+        if player_score == 5:
+            scoreboard.goto(-150,0)
+            scoreboard.write("You Won\n\n Good Job", font=("Courier", 24))
+            break
+        elif opponent_score == 5:
+            scoreboard.goto(-150,0)
+            scoreboard.write("You lost this time\n\nYou'll do better next time", font=("Courier", 24))
+            break
 
         wn.update()
         time.sleep(0.009)
@@ -105,12 +114,12 @@ try:
         # Border checking
 
         # Top and bottom
-        if ball.ycor() > 290:
-            ball.sety(290)
+        if ball.ycor() >= 290:
+            ball.sety(289)
             ball.dy *= -1
 
-        elif ball.ycor() < -290:
-            ball.sety(-290)
+        elif ball.ycor() <= -290:
+            ball.sety(-289)
             ball.dy *= -1
 
         # Left and right
@@ -118,7 +127,7 @@ try:
             player_score += 1
             scoreboard.clear()
             scoreboard.write(f"Player: {player_score}  Opponent: {opponent_score}", align="center",
-                             font=("Courier", 24))
+                             font=("Courier", 22))
             ball.goto(0, 0)
             ball.dx *= -1
 
@@ -126,7 +135,7 @@ try:
             opponent_score += 1
             scoreboard.clear()
             scoreboard.write(f"Player: {player_score}  Opponent: {opponent_score}", align="center",
-                             font=("Courier", 24))
+                             font=("Courier", 22))
             ball.goto(0, 0)
             ball.dx *= -1
 
@@ -145,5 +154,8 @@ try:
         if random.random() < 0.35:
             opponent_decession()
 
-except SyntaxError:
+except:
     pass
+
+
+wn.mainloop()
